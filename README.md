@@ -13,6 +13,8 @@ Materialet är [MIT-licensierat](LICENSE): kostnadsfritt att använda och anpass
 Verktygen kräver Python 3, OpenSSL och Bash. Inga Pythonpaket behöver installeras.
 
 ```sh
+git clone https://github.com/Jtensetti/Folk-idP.git
+cd Folk-idP
 python3 -m unittest discover -s tools -p 'test_*.py'
 bash tools/generate-sandbox-certs.sh
 python3 tools/metadata_preflight.py --help

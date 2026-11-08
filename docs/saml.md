@@ -9,7 +9,8 @@ signering och dekryptering.
 Registrering och tillitsankare hanteras i
 [Sweden Connects sandbox](https://sandbox.swedenconnect.se/home/saml.html).
 Tjipp har separata testflöden för syntetisk identitet och appgodkännande.
-Börja med det syntetiska flödet:
+Registrera er test-SP och kontrollera vilken IdP som är tillgänglig.
+Följande konfiguration avser det syntetiska flödet:
 
 | Inställning | Värde |
 |---|---|
