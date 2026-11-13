@@ -10,6 +10,10 @@ Materialet är [MIT-licensierat](LICENSE): kostnadsfritt att använda och anpass
 2. Använd separata testnycklar och syntetiska identiteter.
 3. Prova inloggning, avbrott, sessionsbindning och felaktiga svar.
 
+För WSO2, Frends och Azure finns ett första
+[kommunpaket för åldersverifiering](docs/kommunintegration.md) med OpenAPI och
+en serverklient. Leverantörernas egna miljöer återstår att verifiera.
+
 Verktygen kräver Python 3, OpenSSL och Bash. Inga Pythonpaket behöver installeras.
 
 ```sh

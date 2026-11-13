@@ -1,0 +1,636 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Tjipp age-verification pilot",
+    "version": "0.1.0",
+    "license": {
+      "name": "MIT"
+    },
+    "description": "Private server-to-server pilot contract. No production endpoint or EU conformance is implied. API keys and binding stay on the RP server. Identity, general credentials and mandates are separate protocols. HTTPS and a fixed backend Host are required. Maximum request body: 131072 bytes. Forwarded and Origin headers are rejected. Example proofs are synthetic placeholders and cannot be approved."
+  },
+  "servers": [
+    {
+      "url": "https://age.internal.example",
+      "description": "Placeholder; obtain the pilot address and trust configuration separately."
+    }
+  ],
+  "paths": {
+    "/age/start": {
+      "post": {
+        "operationId": "ageStart",
+        "summary": "Start a presentation session",
+        "security": [
+          {
+            "SiteKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartRequest"
+              },
+              "example": {
+                "siteId": "municipality",
+                "origin": "https://service.example",
+                "method": "dc_api"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful API call. Inspect state or consume result; a 200 alone does not approve access.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartResponse"
+                },
+                "example": {
+                  "id": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+                  "binding": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "expiresIn": 119,
+                  "presentation": {
+                    "method": "dc_api",
+                    "requests": [
+                      {
+                        "protocol": "org-iso-mdoc",
+                        "data": {
+                          "deviceRequest": "synthetic-example",
+                          "encryptionInfo": "synthetic-example"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; no details or credentials are echoed.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "request_rejected"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/age/poll": {
+      "post": {
+        "operationId": "agePoll",
+        "summary": "Read state; VERIFIED is not permission to proceed",
+        "security": [
+          {
+            "SiteKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionRequest"
+              },
+              "example": {
+                "siteId": "municipality",
+                "id": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+                "binding": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful API call. Inspect state or consume result; a 200 alone does not approve access.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateResponse"
+                },
+                "example": {
+                  "state": "PENDING"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; no details or credentials are echoed.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "request_rejected"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/age/complete": {
+      "post": {
+        "operationId": "ageComplete",
+        "summary": "Submit an opaque DC API presentation",
+        "security": [
+          {
+            "SiteKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteRequest"
+              },
+              "example": {
+                "siteId": "municipality",
+                "id": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+                "binding": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "credential": {
+                  "protocol": "org-iso-mdoc",
+                  "data": {
+                    "response": "synthetic-example"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful API call. Inspect state or consume result; a 200 alone does not approve access.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateResponse"
+                },
+                "example": {
+                  "state": "VERIFIED"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; no details or credentials are echoed.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "request_rejected"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/age/consume": {
+      "post": {
+        "operationId": "ageConsume",
+        "summary": "Consume a verified approval exactly once",
+        "security": [
+          {
+            "SiteKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionRequest"
+              },
+              "example": {
+                "siteId": "municipality",
+                "id": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+                "binding": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful API call. Inspect state or consume result; a 200 alone does not approve access.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Approval"
+                },
+                "example": {
+                  "age_over_18": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; no details or credentials are echoed.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "request_rejected"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/age/cancel": {
+      "post": {
+        "operationId": "ageCancel",
+        "summary": "Cancel a pending or unconsumed presentation",
+        "security": [
+          {
+            "SiteKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionRequest"
+              },
+              "example": {
+                "siteId": "municipality",
+                "id": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii",
+                "binding": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful API call. Inspect state or consume result; a 200 alone does not approve access.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateResponse"
+                },
+                "example": {
+                  "state": "CANCELLED"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Rejected request; no details or credentials are echoed.",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "no-store"
+                  ]
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "request_rejected"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "SiteKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Opaque per-site API key",
+        "description": "43–128 base64url characters; this is not an OAuth access token."
+      }
+    },
+    "schemas": {
+      "SiteId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+      },
+      "SessionToken": {
+        "type": "string",
+        "minLength": 43,
+        "maxLength": 43,
+        "pattern": "^[A-Za-z0-9_-]{43}$"
+      },
+      "StartRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "siteId",
+          "origin",
+          "method"
+        ],
+        "properties": {
+          "siteId": {
+            "$ref": "#/components/schemas/SiteId"
+          },
+          "origin": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 255,
+            "description": "Exact registered HTTPS origin, without trailing slash."
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "dc_api",
+              "openid4vp"
+            ]
+          }
+        }
+      },
+      "SessionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "siteId",
+          "id",
+          "binding"
+        ],
+        "properties": {
+          "siteId": {
+            "$ref": "#/components/schemas/SiteId"
+          },
+          "id": {
+            "$ref": "#/components/schemas/SessionToken"
+          },
+          "binding": {
+            "$ref": "#/components/schemas/SessionToken"
+          }
+        }
+      },
+      "CompleteRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "siteId",
+          "id",
+          "binding",
+          "credential"
+        ],
+        "properties": {
+          "siteId": {
+            "$ref": "#/components/schemas/SiteId"
+          },
+          "id": {
+            "$ref": "#/components/schemas/SessionToken"
+          },
+          "binding": {
+            "$ref": "#/components/schemas/SessionToken"
+          },
+          "credential": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Opaque presentation returned by the browser; never an age verdict."
+          }
+        }
+      },
+      "DcPresentation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "requests"
+        ],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "dc_api"
+            ]
+          },
+          "requests": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "Oid4vpPresentation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "authorizationRequest"
+        ],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "openid4vp"
+            ]
+          },
+          "authorizationRequest": {
+            "type": "string",
+            "pattern": "^openid4vp://"
+          }
+        }
+      },
+      "StartResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "binding",
+          "expiresIn",
+          "presentation"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SessionToken"
+          },
+          "binding": {
+            "$ref": "#/components/schemas/SessionToken"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "presentation": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DcPresentation"
+              },
+              {
+                "$ref": "#/components/schemas/Oid4vpPresentation"
+              }
+            ]
+          }
+        }
+      },
+      "StateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "STARTING",
+              "PENDING",
+              "VERIFYING",
+              "VERIFIED",
+              "DENIED",
+              "FAILED",
+              "EXPIRED",
+              "CANCELLED",
+              "CONSUMED"
+            ]
+          }
+        }
+      },
+      "Approval": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "age_over_18"
+        ],
+        "properties": {
+          "age_over_18": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": [
+              "request_rejected"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

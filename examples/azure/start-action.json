@@ -1,0 +1,23 @@
+{
+  "Tjipp_start": {
+    "type": "Http",
+    "inputs": {
+      "uri": "@concat(parameters('TjippApiOrigin'), '/age/start')",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "@concat('Bearer ', parameters('TjippSiteKey'))"
+      },
+      "body": {
+        "siteId": "@parameters('TjippSiteId')",
+        "origin": "@parameters('TjippSiteOrigin')",
+        "method": "dc_api"
+      },
+      "retryPolicy": { "type": "none" }
+    },
+    "runAfter": {},
+    "runtimeConfiguration": {
+      "secureData": { "properties": ["inputs", "outputs"] }
+    }
+  }
+}
